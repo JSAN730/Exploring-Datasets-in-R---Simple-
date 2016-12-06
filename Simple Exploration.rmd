@@ -7,17 +7,17 @@ output: pdf_document
 
 ## **Introduction**
 
-\setlength\parindent{24pt} In this assignment, we will calculate sample sizes, explore several data sets, create confidence intervals, and test samples. The goal of this assignment is to compare samples with statistical significance. 
+  In this assignment, we will calculate sample sizes, explore several data sets, create confidence intervals, and test samples. The goal of this assignment is to compare samples with statistical significance. 
 
 
 ## **Taste Testing Data Sample Size Determination**
 
-\setlength\parindent{24pt} In this section, I will calculate two sample sizes. For the first calculation, it was assumed that the population mean is 85% and for the second calculation, the population mean is unknown. The provided stats are as follows:
+  In this section, I will calculate two sample sizes. For the first calculation, it was assumed that the population mean is 85% and for the second calculation, the population mean is unknown. The provided stats are as follows:
 
     1. 95% confidence interval
     2. Overall width, margin of error, just less than 2%
 
-\setlength\parindent{24pt} Since the confidence interval is two tailed, I divided the alpha by two and subtracted it from 1 to get .975. Next, I applied qnorm to calculate the z score. Next, the population mean and the error was stored into variables. Using the sample size calculation formula, the sample size assuming a 85% population was calculated to be 4898. The interpretation is that we need to choose a sample size of at least 4898 people to create a confidence interval of 95% with an overall width of less than 2%.
+   Since the confidence interval is two tailed, I divided the alpha by two and subtracted it from 1 to get .975. Next, I applied qnorm to calculate the z score. Next, the population mean and the error was stored into variables. Using the sample size calculation formula, the sample size assuming a 85% population was calculated to be 4898. The interpretation is that we need to choose a sample size of at least 4898 people to create a confidence interval of 95% with an overall width of less than 2%.
 
 ```{r sample size calculation assuming an 85% preference rate}
 
@@ -30,7 +30,7 @@ round(nsize_pref) #rounding up since we're calculating for people
 
 ```
 
-\setlength\parindent{24pt} Next, another sample size was calculated with the same values except the population mean was assumed to be unknown. Since we're assuming that the population mean is unknown, I'll use .5 as the preference rate to be conservative. The sample size is calculated to be 9604.
+  Next, another sample size was calculated with the same values except the population mean was assumed to be unknown. Since we're assuming that the population mean is unknown, I'll use .5 as the preference rate to be conservative. The sample size is calculated to be 9604.
 
 ```{r conservative sample size calculation assuming preference rate is unknown}
 
@@ -43,11 +43,11 @@ round(nsize_unk)
 
 ```
 
-\setlength\parindent{24pt} The sample size obtained from using an assumed population mean is much smaller than the one calculated without any assumptions because there is risk that the resulting confidence interval may be wider than desired when assuming the population mean. Moreover, if you knew the population mean, you would have more information on what the sample will look like and a smaller sample size will be able to product the same quality of predictability.
+  The sample size obtained from using an assumed population mean is much smaller than the one calculated without any assumptions because there is risk that the resulting confidence interval may be wider than desired when assuming the population mean. Moreover, if you knew the population mean, you would have more information on what the sample will look like and a smaller sample size will be able to product the same quality of predictability.
 
 ## **Confidence Intervals for Hot Dog Data**
 
-\setlength\parindent{24pt} In this section, a dataset on three types of hot dogs will be analyzed. Our goal is to:
+  In this section, a dataset on three types of hot dogs will be analyzed. Our goal is to:
 
     1. Read in the data set to a data frame
     2. Note the summary statistics for the overall data set
@@ -58,7 +58,7 @@ round(nsize_unk)
     7. Run t tests to see if the means are different
     8. Determine which type of hot dog has an average Sodium level different from 425 milligrams.
 
- \setlength\parindent{24pt} The data was read into a variable and the summary statistics was explored. There were 3 columns, one of which was used to identify the type of hot dog. Using the deplyr, the types of hot dogs were isolated by filtering then the type column was deleted and the remaining data was stored into a new dataset. After creating subsets by type of hot dog, box plots were created in one row for comparison.
+   The data was read into a variable and the summary statistics was explored. There were 3 columns, one of which was used to identify the type of hot dog. Using the deplyr, the types of hot dogs were isolated by filtering then the type column was deleted and the remaining data was stored into a new dataset. After creating subsets by type of hot dog, box plots were created in one row for comparison.
 
 ```{r Hot Dog Data Analysis}
 
@@ -88,7 +88,7 @@ par(mfrow=c(1,3)) #setting the format of boxplots
 
 **6. Create confidence intervals for mean # of calories for each hot dog type at 95% & 99% confidence levels**
 
-\setlength\parindent{24pt} Next, confidence levels were calculated for each hot dog type's calories. To do so, the number of observations was stored by calculating the number of rows. then the mean and standard deviation was calculated into new variables. Margin of error was calculated by finding the z score. For 95% level, a two tail test was used and for the 99% confidence level the higher point was calculated. To do this, the two tail test was calculated by dividing the alpha by 2 and the one tail test was calculated by keeping the alpha value whole. Finally, the confidence interval was calculated by subtracting and adding from the mean.
+  Next, confidence levels were calculated for each hot dog type's calories. To do so, the number of observations was stored by calculating the number of rows. then the mean and standard deviation was calculated into new variables. Margin of error was calculated by finding the z score. For 95% level, a two tail test was used and for the 99% confidence level the higher point was calculated. To do this, the two tail test was calculated by dividing the alpha by 2 and the one tail test was calculated by keeping the alpha value whole. Finally, the confidence interval was calculated by subtracting and adding from the mean.
 
 
 ```{r Creating Confidence Intervals}
@@ -146,7 +146,7 @@ n_phb <- nrow(poultry)
 
 **7. Run T tests to see if the means are different**
 
-\setlength\parindent{24pt} Next t test were ran to see if there was a difference in the mean number of calories for each hot dog type. The results are below:
+  Next t test were ran to see if there was a difference in the mean number of calories for each hot dog type. The results are below:
 
     1. Each result was ran at a 95% confidence level alpha = .05
     2. Null hypothesis = The difference in means is 0
@@ -166,7 +166,7 @@ t.test(x = meat$Calories, y = poultry$Calories) #testing meat and poultry
 
 **8. Determine which type of hot dog has an average Sodium level different from 425 milligrams.**
 
-\setlength\parindent{24pt} T tests of each hot dog's sodium level was analyzed to see if they were different from a level of 425 milligrams. The results are below:
+   T tests of each hot dog's sodium level was analyzed to see if they were different from a level of 425 milligrams. The results are below:
 
     1. Each result was ran at a 95% confidence level alpha = .05
     2. Null hypothesis = The difference in means is 0
@@ -187,7 +187,7 @@ t.test(x = poultry$Sodium, mu = 425) #testing poultry hot dogs
 
 ## **Hypothesis Testing on Forbes' CEO Salary Data**
 
-\setlength\parindent{24pt} In this section, CEO salary data from Forbes will be analyzed to:
+   In this section, CEO salary data from Forbes will be analyzed to:
 
     1. Read in the data to a data frame
     2. Check the structure and summary stats for the data
@@ -203,7 +203,7 @@ summary(CEOsalary) #checking summary stats for the data
 
 ```
 
-\setlength\parindent{24pt} Next, the age and the salaries were analyzed. Proportion test was used because the goal was to see if at least 50% of the CEOS were older than 45 and then the salary data was tested to see if atleast 50% of the CEOS were paid less than $500,000. First, the salaries that fit the tested hypothesis was isolated and the count of the group was calculated. Then the total number of CEOs in the data set was stored in a variable and the proportion test was conducted. The results are below:
+   Next, the age and the salaries were analyzed. Proportion test was used because the goal was to see if at least 50% of the CEOS were older than 45 and then the salary data was tested to see if atleast 50% of the CEOS were paid less than $500,000. First, the salaries that fit the tested hypothesis was isolated and the count of the group was calculated. Then the total number of CEOs in the data set was stored in a variable and the proportion test was conducted. The results are below:
 
     1. Each result was ran at a 95% confidence level alpha = .05
     2. Null hypothesis = true proportion is not greater than .5
