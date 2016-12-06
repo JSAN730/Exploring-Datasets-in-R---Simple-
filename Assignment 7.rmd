@@ -1,0 +1,227 @@
+---
+title: "A7.1 Hypothesis Testing on Different Types of Data"
+author: "Jeffrey An"
+date: "December 2, 2016"
+output: pdf_document
+---
+
+## **Introduction**
+
+\setlength\parindent{24pt} In this assignment, we will calculate sample sizes, explore several data sets, create confidence intervals, and test samples. The goal of this assignment is to compare samples with statistical significance. 
+
+
+## **Taste Testing Data Sample Size Determination**
+
+\setlength\parindent{24pt} In this section, I will calculate two sample sizes. For the first calculation, it was assumed that the population mean is 85% and for the second calculation, the population mean is unknown. The provided stats are as follows:
+
+    1. 95% confidence interval
+    2. Overall width, margin of error, just less than 2%
+
+\setlength\parindent{24pt} Since the confidence interval is two tailed, I divided the alpha by two and subtracted it from 1 to get .975. Next, I applied qnorm to calculate the z score. Next, the population mean and the error was stored into variables. Using the sample size calculation formula, the sample size assuming a 85% population was calculated to be 4898. The interpretation is that we need to choose a sample size of at least 4898 people to create a confidence interval of 95% with an overall width of less than 2%.
+
+```{r sample size calculation assuming an 85% preference rate}
+
+za2_pref<- qnorm(.975) #calculating z a/2
+    p_pref<-.85 #Assuming the preference rate at 85%
+    e_pref<-.01 #Error term - half of the width
+
+nsize_pref<- za2_pref^2*p_pref*(1-p_pref)/e_pref^2 #calculating the sample size
+round(nsize_pref) #rounding up since we're calculating for people
+
+```
+
+\setlength\parindent{24pt} Next, another sample size was calculated with the same values except the population mean was assumed to be unknown. Since we're assuming that the population mean is unknown, I'll use .5 as the preference rate to be conservative. The sample size is calculated to be 9604.
+
+```{r conservative sample size calculation assuming preference rate is unknown}
+
+za2_unk<- qnorm(.975)
+    p_unk<-.5 #Assuming the preference rate is unknown
+    e_unk<-.01 #Error term - half of the width
+
+nsize_unk<-za2_unk^2*p_unk*(1-p_unk)/e_unk^2
+round(nsize_unk)
+
+```
+
+\setlength\parindent{24pt} The sample size obtained from using an assumed population mean is much smaller than the one calculated without any assumptions because there is risk that the resulting confidence interval may be wider than desired when assuming the population mean. Moreover, if you knew the population mean, you would have more information on what the sample will look like and a smaller sample size will be able to product the same quality of predictability.
+
+## **Confidence Intervals for Hot Dog Data**
+
+\setlength\parindent{24pt} In this section, a dataset on three types of hot dogs will be analyzed. Our goal is to:
+
+    1. Read in the data set to a data frame
+    2. Note the summary statistics for the overall data set
+    3. Create individual data frames for each hot dog type (beef, meat & poultry)
+    4. Look at the summary statistics for each subsetted data frame
+    5. Create boxplots for each hot dog type
+    6. Create confidence intervals for mean # of calories for each hot dog type at 95% & 99% confidence levels
+    7. Run t tests to see if the means are different
+    8. Determine which type of hot dog has an average Sodium level different from 425 milligrams.
+
+ \setlength\parindent{24pt} The data was read into a variable and the summary statistics was explored. There were 3 columns, one of which was used to identify the type of hot dog. Using the deplyr, the types of hot dogs were isolated by filtering then the type column was deleted and the remaining data was stored into a new dataset. After creating subsets by type of hot dog, box plots were created in one row for comparison.
+
+```{r Hot Dog Data Analysis}
+
+hotdogs<-read.csv("hot_dogs.csv") #reading in the dataset
+summary(hotdogs) #summarizing the data set
+
+library(dplyr) #using dplyr
+
+beef<-filter(hotdogs, Type == "Beef") #subsetting beef hotdogs
+    beef<-beef[2:3] #removing the type column
+    summary(beef) #checking summary statistics for new data frame
+
+meat<-filter(hotdogs, Type == "Meat") #subsetting meat hotdogs
+    meat<-meat[2:3] #removing the type column
+    summary(meat) #checking summary statistics for new data frame
+
+poultry<-filter(hotdogs, Type == "Poultry") #subsetting poultry hotdogs
+    poultry<-poultry[2:3] #removing the type column
+    summary(poultry) #checking summary statistics for new data frame
+
+par(mfrow=c(1,3)) #setting the format of boxplots
+    boxplot(beef, main ="Beef Hot Dogs", col = "blue") #creating boxplots
+    boxplot(meat, main ="Meat Hot Dogs", col = "green")
+    boxplot(poultry, main ="Poultry Hot Dogs", col = "yellow")
+
+```
+
+**6. Create confidence intervals for mean # of calories for each hot dog type at 95% & 99% confidence levels**
+
+\setlength\parindent{24pt} Next, confidence levels were calculated for each hot dog type's calories. To do so, the number of observations was stored by calculating the number of rows. then the mean and standard deviation was calculated into new variables. Margin of error was calculated by finding the z score. For 95% level, a two tail test was used and for the 99% confidence level the higher point was calculated. To do this, the two tail test was calculated by dividing the alpha by 2 and the one tail test was calculated by keeping the alpha value whole. Finally, the confidence interval was calculated by subtracting and adding from the mean.
+
+
+```{r Creating Confidence Intervals}
+#Beef Hot Dogs Confidence Interval at 95% level
+
+n_bha <- nrow(beef) #number of sample observations
+    meancal_bha <- mean(beef$Calories) #storing the mean
+    sdcal_bha <- sd(beef$Calories) #storing the standard deviation
+    ecal_bha <- qnorm(1-(0.05/2))* sdcal_bha/sqrt(n_bha) #calculating two tail z values
+    conf.int_bha <- c(meancal_bha - ecal_bha, meancal_bha + ecal_bha) #storing confidence intervals
+    conf.int_bha #printing confidence intervals
+
+#Beef Hot Dogs Confidence Interval at 99% level
+n_bhb <- nrow(beef) #number of sample observations
+    meancal_bhb <- mean(beef$Calories) #storing the mean
+    sdcal_bhb <- sd(beef$Calories) #storing the standard deviation
+    ecal_bhb <- qnorm(.99, lower.tail = FALSE)* sdcal_bhb/sqrt(n_bhb) #calculating one tail z values
+    conf.int_bhb <- meancal_bhb - ecal_bhb #storing confidence interval at higher point
+    conf.int_bhb #printing confidence interval
+
+#Meat Hot Dogs Confidence Interval at 95% level
+
+n_mha <- nrow(meat)
+    meancal_mha <- mean(meat$Calories)
+    sdcal_mha <- sd(meat$Calories)
+    ecal_mha <- qnorm(1-(0.05/2))* sdcal_mha/sqrt(n_mha)
+    conf.int_mha <- c(meancal_mha - ecal_mha, meancal_mha + ecal_mha)
+    conf.int_mha
+
+#Meat Hot Dogs Confidence Interval at 99% level
+n_mhb <- nrow(meat)
+    meancal_mhb <- mean(meat$Calories)
+    sdcal_mhb <- sd(meat$Calories)
+    ecal_mhb <- qnorm(.99, lower.tail = FALSE)* sdcal_mhb/sqrt(n_mhb)
+    conf.int_mhb <- meancal_mhb - ecal_mhb
+    conf.int_mhb
+
+#Poultry Hot Dogs Confidence Interval at 95% level
+n_pha <- nrow(poultry)
+    meancal_pha <- mean(poultry$Calories)
+    sdcal_pha <- sd(poultry$Calories)
+    ecal_pha <- qnorm(1-(0.05/2))* sdcal_pha/sqrt(n_pha)
+    conf.int_pha <- c(meancal_pha - ecal_pha, meancal_pha + ecal_pha)
+    conf.int_pha
+
+#Poultry Hot Dogs Confidence Interval at 99% level
+n_phb <- nrow(poultry)
+    meancal_phb <- mean(poultry$Calories)
+    sdcal_phb <- sd(poultry$Calories)
+    ecal_phb <- qnorm(.99, lower.tail = FALSE)* sdcal_phb/sqrt(n_phb)
+    conf.int_phb <- meancal_phb - ecal_phb
+    conf.int_phb
+
+```
+
+**7. Run T tests to see if the means are different**
+
+\setlength\parindent{24pt} Next t test were ran to see if there was a difference in the mean number of calories for each hot dog type. The results are below:
+
+    1. Each result was ran at a 95% confidence level alpha = .05
+    2. Null hypothesis = The difference in means is 0
+    3. Alternative hypothesis = The difference in means is not 0
+    4. Beef vs Meat hot dog - 0.8167 > .05 Null hypothesis can't be rejected, means are likely  the same
+    5. Beef vs Meat hot dog - 0.00001229 < 0.5 Null hypothesis is rejected, means are likely to be different
+    6. Meat vs Poultry hot dog - 0.00003017 < 0.5 Null hypothesis is rejected, means are likely to be different
+
+```{r t test on means for calories}
+t.test(x = beef$Calories, y = meat$Calories) #testing beef and meat hot dogs
+
+t.test(x = beef$Calories, y = poultry$Calories) #testing beef and poultry hot dogs
+
+t.test(x = meat$Calories, y = poultry$Calories) #testing meat and poultry
+
+```
+
+**8. Determine which type of hot dog has an average Sodium level different from 425 milligrams.**
+
+\setlength\parindent{24pt} T tests of each hot dog's sodium level was analyzed to see if they were different from a level of 425 milligrams. The results are below:
+
+    1. Each result was ran at a 95% confidence level alpha = .05
+    2. Null hypothesis = The difference in means is 0
+    3. Alternative hypothesis = The difference in means is not 0
+    4. Beef vs mu = 425 - 0.1175 > .05 Null hypothesis can't be rejected, means are likely  the same
+    5. Meat vs mu = 425 - 0.7799 > .05 Null hypothesis can't be rejected, means are likely  the same
+    6. Poultry vs mu = 425 - 0.1175 > .05 Null hypothesis can't be rejected, means are likely  the same
+
+
+```{r t test on means for sodium}
+t.test(x = beef$Sodium, mu = 425) #testing beef hot dogs
+
+t.test(x = meat$Sodium, mu = 425) #testing meat hot dogs
+
+t.test(x = poultry$Sodium, mu = 425) #testing poultry hot dogs
+
+```
+
+## **Hypothesis Testing on Forbes' CEO Salary Data**
+
+\setlength\parindent{24pt} In this section, CEO salary data from Forbes will be analyzed to:
+
+    1. Read in the data to a data frame
+    2. Check the structure and summary stats for the data
+    3. Test the hypothesis at 95% confidence that at least 50% of the CEOs are 45 years old or older.
+    4. Test the hypothesis at 95% confidence that at least 50% of the CEOs earn less than $500,000 per year. Use one-sided hypothesis tests.
+
+```{r Reading and Exploring the data set}
+
+CEOsalary <- read.csv("salaries.csv") #reading data into R
+
+str(CEOsalary) #checking the structure of the data
+summary(CEOsalary) #checking summary stats for the data
+
+```
+
+\setlength\parindent{24pt} Next, the age and the salaries were analyzed. Proportion test was used because the goal was to see if at least 50% of the CEOS were older than 45 and then the salary data was tested to see if atleast 50% of the CEOS were paid less than $500,000. First, the salaries that fit the tested hypothesis was isolated and the count of the group was calculated. Then the total number of CEOs in the data set was stored in a variable and the proportion test was conducted. The results are below:
+
+    1. Each result was ran at a 95% confidence level alpha = .05
+    2. Null hypothesis = true proportion is not greater than .5
+    3. Age: 0.7166667 > .05 Null can't be rejected, likely that proportion of CEOs greater than or equal to 45 is less than 50%
+    4. Salary: 0.8166667 > .05 Null can't be rejected, likely that proportion of CEOs who get paid  less than $500,000 is less than 50%
+
+```{r Hypothesis Testing}
+
+ceoage45<- CEOsalary$AGE >= 45
+countage<- sum(ceoage45)
+totalage<-length(CEOsalary$AGE)
+prop.test(x = countage, n = totalage, alternative = "greater")
+
+ceopay<- CEOsalary$SAL <= 500
+countpay<- sum(ceopay)
+totalpay<-length(CEOsalary$SAL)
+prop.test(x = countpay, n = totalpay, alternative = "greater")
+
+```
+
+
